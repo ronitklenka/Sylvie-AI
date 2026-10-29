@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#171522">
+<title>Sylvie AI 💜</title>
+<style>
+body{margin:0;background:#171522;color:#f5f3ff;font:16px system-ui}
+header{padding:18px;background:#211c30;color:#d8b4fe}
+#chat{max-width:700px;margin:auto;padding:16px 16px 100px}
+.msg{padding:12px 15px;margin:12px 0;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.ai{background:#302940;margin-right:10%}
+.user{background:#6d28d9;margin-left:10%}
+form{position:fixed;bottom:0;left:0;right:0;display:flex;gap:8px;padding:12px;background:#211c30}
+input{flex:1;min-width:0;padding:13px;border-radius:24px;background:#171522;color:white;border:1px solid #514664;font-size:16px}
+button{border:0;border-radius:24px;padding:12px 18px;background:#8b5cf6;color:white}
+</style>
+</head>
+<body>
+<header><h2>💜 Sylvie AI</h2>Your personal AI companion</header>
+<div id="chat">
+<div class="msg ai">Hi! I'm Sylvie. 💜 Your website is ready. We'll connect the AI brain next.</div>
+</div>
+<form id="form">
+<input id="message" placeholder="Message Sylvie..." required>
+<button type="submit">Send</button>
+</form>
+<script>
+const chat=document.getElementById('chat');
+document.getElementById('form').addEventListener('submit',function(e){
+e.preventDefault();
+const input=document.getElementById('message');
+const value=input.value.trim();
+if(!value)return;
+const user=document.createElement('div');
+user.className='msg user';
+user.textContent=value;
+chat.appendChild(user);
+input.value='';
+const reply=document.createElement('div');
+reply.className='msg ai';
+reply.textContent='I received your message! 💜 My AI engine is not connected yet.';
+chat.appendChild(reply);
+window.scrollTo(0,document.body.scrollHeight);
+});
+</script>
+</body>
+</html>
