@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,34 +16,63 @@ header{padding:18px;background:#211c30;color:#d8b4fe}
 form{position:fixed;bottom:0;left:0;right:0;display:flex;gap:8px;padding:12px;background:#211c30}
 input{flex:1;min-width:0;padding:13px;border-radius:24px;background:#171522;color:white;border:1px solid #514664;font-size:16px}
 button{border:0;border-radius:24px;padding:12px 18px;background:#8b5cf6;color:white}
+button:disabled{opacity:.6}
 </style>
 </head>
 <body>
 <header><h2>💜 Sylvie AI</h2>Your personal AI companion</header>
 <div id="chat">
-<div class="msg ai">Hi! I'm Sylvie. 💜 Your website is ready. We'll connect the AI brain next.</div>
+<div class="msg ai">Hi! I'm Sylvie. 💜 How can I help you today?</div>
 </div>
 <form id="form">
-<input id="message" placeholder="Message Sylvie..." required>
-<button type="submit">Send</button>
+<input id="message" placeholder="Message Sylvie..." autocomplete="off" required>
+<button id="send" type="submit">Send</button>
 </form>
 <script>
 const chat=document.getElementById('chat');
-document.getElementById('form').addEventListener('submit',function(e){
-e.preventDefault();
+const form=document.getElementById('form');
 const input=document.getElementById('message');
-const value=input.value.trim();
-if(!value)return;
-const user=document.createElement('div');
-user.className='msg user';
-user.textContent=value;
-chat.appendChild(user);
-input.value='';
-const reply=document.createElement('div');
-reply.className='msg ai';
-reply.textContent='I received your message! 💜 My AI engine is not connected yet.';
-chat.appendChild(reply);
-window.scrollTo(0,document.body.scrollHeight);
+const send=document.getElementById('send');
+
+const API='https://sylvie-ai-backend.ronitklenka.workers.dev';
+
+function addMessage(text,role){
+  const div=document.createElement('div');
+  div.className='msg '+role;
+  div.textContent=text;
+  chat.appendChild(div);
+  window.scrollTo(0,document.body.scrollHeight);
+  return div;
+}
+
+form.addEventListener('submit',async function(e){
+  e.preventDefault();
+  const value=input.value.trim();
+  if(!value)return;
+
+  addMessage(value,'user');
+  input.value='';
+  send.disabled=true;
+  const waiting=addMessage('Sylvie is thinking... 💜','ai');
+
+  try{
+    const response=await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:value})
+    });
+    const data=await response.json();
+
+    if(!response.ok) throw new Error(data.error||'Request failed');
+    waiting.textContent=data.reply||"I'm here with you 💜";
+  }catch(error){
+    waiting.textContent="I couldn't connect just now. 💜 Please check the backend and try again.";
+    console.error(error);
+  }finally{
+    send.disabled=false;
+    input.focus();
+    window.scrollTo(0,document.body.scrollHeight);
+  }
 });
 </script>
 </body>
