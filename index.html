@@ -1,346 +1,401 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<meta name="description" content="Sylvie AI — your multilingual AI companion.">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./icon-192.png">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="description" content="Sylvie AI - Your multilingual AI companion.">
+
 <title>Sylvie AI</title>
 
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #000000;
-  --panel: #111111;
-  --panel2: #202020;
-  --text: #ffffff;
-  --muted: #aaaaaa;
-  --line: #383838;
+* {
+  box-sizing: border-box;
 }
 
-* { box-sizing: border-box; }
+:root {
+  --bg: #000;
+  --panel: #111;
+  --panel2: #1b1b1b;
+  --text: #fff;
+  --muted: #aaa;
+  --border: #303030;
+}
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 15px/1.5 system-ui, sans-serif;
+  font-family: Arial, sans-serif;
   height: 100dvh;
   overflow: hidden;
 }
 
-button, input, textarea { font: inherit; }
-button { cursor: pointer; }
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
 
 .app {
-  height: 100dvh;
   display: flex;
-  overflow: hidden;
+  height: 100dvh;
+  width: 100%;
 }
 
+/* SIDEBAR */
+
 .sidebar {
-  width: 290px;
-  flex: 0 0 290px;
-  background: #111111;
-  border-right: 1px solid var(--line);
+  width: 280px;
+  background: #101010;
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  padding: 14px;
-  gap: 12px;
-  z-index: 5;
+  padding: 15px;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
+  transform: translateX(-100%);
+  transition: transform .25s ease;
+}
+
+.sidebar.open {
+  transform: translateX(0);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 4px 2px 8px;
+  gap: 12px;
+  padding: 8px 4px 20px;
 }
 
-.brand strong { font-size: 19px; }
-
-.newchat {
-  background: var(--panel2);
-  border: 1px solid var(--line);
-  color: white;
+.brand img {
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
-  padding: 11px 12px;
-  text-align: left;
+  object-fit: cover;
+  background: #222;
+}
+
+.brand-name {
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.new-chat {
+  background: white;
+  color: black;
+  border: none;
+  padding: 13px;
+  border-radius: 10px;
+  font-weight: bold;
+  margin-bottom: 12px;
 }
 
 .search {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--line);
+  background: #202020;
   color: white;
-  border-radius: 10px;
-  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 9px;
+  padding: 12px;
+  width: 100%;
+  outline: none;
+  margin-bottom: 15px;
 }
 
-.history-label {
-  color: var(--muted);
+.history-heading {
+  color: #999;
   font-size: 12px;
-  padding: 4px 5px 0;
+  margin: 10px 4px;
+  text-transform: uppercase;
 }
 
 .history {
-  overflow: auto;
+  overflow-y: auto;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
 }
 
 .chat-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  border-radius: 10px;
-  padding: 8px;
+  gap: 7px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 4px;
 }
 
 .chat-item.active,
 .chat-item:hover {
-  background: var(--panel2);
+  background: #252525;
 }
 
 .chat-title {
   flex: 1;
-  min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: left;
-  background: none;
-  border: 0;
-  color: white;
-  padding: 3px;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  cursor: pointer;
 }
 
-.icon-btn {
+.chat-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.chat-actions button {
   background: transparent;
-  border: 0;
-  color: var(--muted);
-  padding: 6px;
-  border-radius: 8px;
+  color: #aaa;
+  border: none;
+  padding: 4px;
 }
 
-.icon-btn:hover {
-  background: #444444;
+.chat-actions button:hover {
   color: white;
 }
 
-.side-bottom {
-  border-top: 1px solid var(--line);
-  padding-top: 10px;
-  color: var(--muted);
+.sidebar-footer {
+  border-top: 1px solid #333;
+  padding-top: 12px;
+  color: #999;
   font-size: 12px;
 }
 
+/* MAIN */
+
 .main {
-  min-width: 0;
-  flex: 1;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100dvh;
 }
 
 .topbar {
-  height: 58px;
-  flex: 0 0 58px;
-  background: var(--panel);
+  height: 60px;
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  gap: 12px;
   padding: 0 15px;
-  border-bottom: 1px solid var(--line);
+  gap: 13px;
+  flex-shrink: 0;
 }
 
 .menu-btn {
-  background: none;
-  border: 0;
+  background: transparent;
   color: white;
-  font-size: 22px;
-  padding: 5px;
+  border: none;
+  font-size: 24px;
 }
 
-.top-title {
-  font-weight: 650;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.top-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: bold;
+}
+
+.top-brand img {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  object-fit: cover;
 }
 
 .language {
-  background: var(--bg);
-  border: 1px solid var(--line);
+  margin-left: auto;
+  background: #171717;
   color: white;
-  padding: 7px;
-  border-radius: 9px;
-  max-width: 120px;
+  border: 1px solid #444;
+  padding: 8px;
+  border-radius: 8px;
+  max-width: 115px;
 }
+
+/* CHAT AREA */
 
 .chat-area {
   flex: 1;
   overflow-y: auto;
-  padding: 22px 16px 16px;
+  padding: 20px 15px 25px;
   scroll-behavior: smooth;
 }
 
 .messages {
-  max-width: 820px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 17px;
+  max-width: 780px;
+  margin: auto;
 }
 
 .welcome {
+  min-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  margin: auto;
-  padding: 10vh 12px 4vh;
-  max-width: 600px;
+  padding: 20px;
+}
+
+.welcome img {
+  width: 75px;
+  height: 75px;
+  border-radius: 22px;
+  margin-bottom: 20px;
+  object-fit: cover;
 }
 
 .welcome h1 {
-  font-size: 30px;
-  margin: 0 0 8px;
+  font-size: 27px;
+  margin: 5px 0;
 }
 
-.welcome p { color: var(--muted); }
+.welcome p {
+  color: #999;
+  line-height: 1.6;
+  max-width: 350px;
+}
 
-.msg {
+.message {
+  margin: 20px 0;
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
+  flex-direction: column;
 }
 
-.avatar {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #333333;
-  color: white;
-  font-size: 12px;
+.message.user {
+  align-items: flex-end;
 }
 
 .bubble {
-  min-width: 0;
-  max-width: calc(100% - 40px);
-  padding: 12px 15px;
-  border-radius: 15px;
+  max-width: 88%;
+  padding: 13px 16px;
+  border-radius: 16px;
+  line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  background: var(--panel2);
 }
 
-.msg.user { justify-content: flex-end; }
-.msg.user .avatar { order: 2; }
-.msg.user .bubble { background: #303030; }
+.user .bubble {
+  background: #eee;
+  color: #000;
+  border-bottom-right-radius: 4px;
+}
 
-.msg-tools {
+.assistant .bubble {
+  background: #171717;
+  color: white;
+  border: 1px solid #303030;
+  border-bottom-left-radius: 4px;
+}
+
+.message-tools {
   display: flex;
-  gap: 5px;
-  margin-top: 5px;
+  gap: 10px;
+  margin-top: 7px;
 }
 
-.msg-tools button {
-  font-size: 12px;
-  color: var(--muted);
+.message-tools button {
+  color: #999;
   background: transparent;
-  border: 0;
-  padding: 4px 7px;
+  border: none;
+  font-size: 12px;
+  padding: 4px;
 }
 
-.composer-wrap {
-  padding: 10px 14px max(12px, env(safe-area-inset-bottom));
-  background: var(--bg);
+.message-tools button:hover {
+  color: white;
+}
+
+.typing {
+  color: #aaa;
+  padding: 12px;
+}
+
+/* INPUT */
+
+.composer-area {
+  padding: 10px 15px calc(12px + env(safe-area-inset-bottom));
+  background: #000;
 }
 
 .composer {
-  max-width: 820px;
+  max-width: 780px;
   margin: auto;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 9px;
   display: flex;
   align-items: flex-end;
   gap: 8px;
+  background: #171717;
+  border: 1px solid #444;
+  border-radius: 16px;
+  padding: 8px;
 }
 
-#message {
-  resize: none;
-  min-height: 42px;
-  max-height: 150px;
+.composer textarea {
   flex: 1;
+  min-width: 0;
+  max-height: 140px;
+  resize: none;
+  border: none;
+  outline: none;
   background: transparent;
-  border: 0;
-  outline: 0;
   color: white;
-  padding: 9px;
+  padding: 10px;
+  font-size: 15px;
 }
 
-.send {
-  background: white;
-  border: 0;
-  color: black;
+.send-btn {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: none;
   border-radius: 12px;
-  padding: 10px 15px;
-  font-weight: 600;
+  background: white;
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-.send:disabled { opacity: .5; }
+.send-btn:disabled {
+  opacity: .4;
+}
 
-.hint {
+.disclaimer {
+  color: #777;
   text-align: center;
-  color: #999999;
   font-size: 11px;
-  padding-top: 6px;
+  margin-top: 9px;
 }
+
+/* MOBILE OVERLAY */
 
 .overlay {
   display: none;
   position: fixed;
   inset: 0;
   background: #0009;
-  z-index: 4;
+  z-index: 15;
 }
 
-.empty {
-  color: var(--muted);
-  font-size: 13px;
-  text-align: center;
-  padding: 20px;
+.overlay.show {
+  display: block;
 }
 
-@media(max-width:720px) {
+@media (min-width: 800px) {
   .sidebar {
-    position: fixed;
-    inset: 0 auto 0 0;
-    height: 100dvh;
-    transform: translateX(-105%);
-    transition: transform .22s ease;
-    box-shadow: 15px 0 45px #0007;
+    position: relative;
+    transform: none;
+    flex-shrink: 0;
   }
 
-  .sidebar.open { transform: translateX(0); }
-  .overlay.show { display: block; }
-  .topbar { padding: 0 10px; }
-  .chat-area { padding: 16px 12px; }
-  .welcome { padding-top: 12vh; }
-  .language { max-width: 105px; }
-}
-
-@media(min-width:721px) {
-  .menu-btn { display: none; }
+  .overlay {
+    display: none !important;
+  }
 }
 </style>
 </head>
@@ -352,25 +407,28 @@ button { cursor: pointer; }
   <aside class="sidebar" id="sidebar">
 
     <div class="brand">
-      <strong>Sylvie AI</strong>
-      <button class="icon-btn" id="closeSidebar">✕</button>
+      <img src="./icon-192.png" alt="Sylvie AI logo"
+           onerror="this.style.display='none'">
+      <span class="brand-name">Sylvie AI</span>
     </div>
 
-    <button class="newchat" id="newChat">＋ New chat</button>
+    <button class="new-chat" id="newChatBtn">
+      + New Chat
+    </button>
 
     <input
       class="search"
-      id="search"
+      id="searchInput"
+      placeholder="Search conversations..."
       type="search"
-      placeholder="Search chats..."
     >
 
-    <div class="history-label">YOUR CONVERSATIONS</div>
+    <div class="history-heading">Your conversations</div>
 
-    <div class="history" id="history"></div>
+    <div class="history" id="historyList"></div>
 
-    <div class="side-bottom">
-      Chats are saved on this device.
+    <div class="sidebar-footer">
+      Sylvie AI · Your AI companion
     </div>
 
   </aside>
@@ -381,469 +439,454 @@ button { cursor: pointer; }
 
     <header class="topbar">
 
-      <button class="menu-btn" id="menuBtn">☰</button>
+      <button class="menu-btn" id="menuBtn"
+              aria-label="Open menu">☰</button>
 
-      <div class="top-title" id="topTitle">New chat</div>
+      <div class="top-brand">
+        <img src="./icon-192.png" alt=""
+             onerror="this.style.display='none'">
+        <span>Sylvie AI</span>
+      </div>
 
-      <select class="language" id="language">
+      <select class="language" id="languageSelect"
+              aria-label="Conversation language">
         <option value="auto">Auto language</option>
-        <option value="en">English</option>
-        <option value="hi">हिन्दी</option>
-        <option value="or">ଓଡ଼ିଆ</option>
+        <option value="English">English</option>
+        <option value="Hindi">हिन्दी</option>
+        <option value="Odia">ଓଡ଼ିଆ</option>
       </select>
 
     </header>
 
     <section class="chat-area" id="chatArea">
-      <div class="messages" id="messages"></div>
-    </section>
 
-    <div class="composer-wrap">
+      <div class="messages" id="messages">
 
-      <form class="composer" id="form">
+        <div class="welcome" id="welcome">
+          <img src="./icon-192.png" alt="Sylvie AI"
+               onerror="this.style.display='none'">
 
-        <textarea
-          id="message"
-          rows="1"
-          placeholder="Message Sylvie..."
-          required
-        ></textarea>
+          <h1>What can I help with?</h1>
 
-        <button class="send" id="send" type="submit">
-          Send
-        </button>
+          <p>
+            Ask Sylvie anything. You can chat in English,
+            Hindi, or Odia.
+          </p>
+        </div>
 
-      </form>
-
-      <div class="hint">
-        Sylvie can make mistakes. Check important information.
       </div>
 
-    </div>
+    </section>
+
+    <footer class="composer-area">
+
+      <div class="composer">
+
+        <textarea
+          id="messageInput"
+          rows="1"
+          placeholder="Message Sylvie..."
+          aria-label="Message Sylvie"
+        ></textarea>
+
+        <button class="send-btn" id="sendBtn"
+                aria-label="Send message">↑</button>
+
+      </div>
+
+      <div class="disclaimer">
+        Sylvie AI can make mistakes. Check important information.
+      </div>
+
+    </footer>
 
   </main>
+
 </div>
 
 <script>
 "use strict";
 
-/* CLOUDFARE BACKEND */
+/* YOUR CLOUDFLARE BACKEND */
 
 const API =
   "https://sylvie-ai-backend.ronitklenka.workers.dev";
 
-const STORAGE_KEY = "sylvie_chats_v1";
+/* APP STORAGE */
 
-const $ = id => document.getElementById(id);
+const STORAGE_KEY = "sylvie_ai_chats_v2";
 
-let chats = loadChats();
-let activeId = chats[0]?.id || null;
-let busy = false;
+let chats = [];
+let currentChatId = null;
+let isSending = false;
 
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const messages = document.getElementById("messages");
+const historyList = document.getElementById("historyList");
+const chatArea = document.getElementById("chatArea");
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+const searchInput = document.getElementById("searchInput");
+const languageSelect = document.getElementById("languageSelect");
 
-/* CHAT STORAGE */
-
-function uid() {
-  return Date.now().toString(36) +
-    Math.random().toString(36).slice(2, 8);
-}
+/* LOAD SAVED CHATS */
 
 function loadChats() {
   try {
-    const data = JSON.parse(
-      localStorage.getItem(STORAGE_KEY) || "[]"
-    );
+    const saved = localStorage.getItem(STORAGE_KEY);
+    chats = saved ? JSON.parse(saved) : [];
 
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
+    if (!Array.isArray(chats)) chats = [];
+  } catch (error) {
+    chats = [];
+  }
+
+  if (chats.length === 0) {
+    createChat();
+  } else {
+    currentChatId = chats[0].id;
+    render();
   }
 }
 
-function save() {
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(chats)
-  );
+function saveChats() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
 }
 
-function activeChat() {
-  return chats.find(c => c.id === activeId);
+function currentChat() {
+  return chats.find(chat => chat.id === currentChatId);
 }
-
-
-/* SIDEBAR */
-
-function closeMenu() {
-  $("sidebar").classList.remove("open");
-  $("overlay").classList.remove("show");
-}
-
-function openMenu() {
-  $("sidebar").classList.add("open");
-  $("overlay").classList.add("show");
-}
-
 
 /* NEW CHAT */
 
-function makeChat() {
-
+function createChat() {
   const chat = {
-    id: uid(),
-    title: "New chat",
-    created: Date.now(),
-    updated: Date.now(),
-    language: $("language").value,
-    messages: []
+    id: Date.now().toString(),
+    title: "New conversation",
+    messages: [],
+    updated: Date.now()
   };
 
   chats.unshift(chat);
-  activeId = chat.id;
+  currentChatId = chat.id;
 
-  save();
+  saveChats();
   render();
-  closeMenu();
 
-  $("message").focus();
+  closeSidebar();
+  messageInput.focus();
 }
 
+/* SWITCH CHAT */
 
-/* CHAT HISTORY */
+function switchChat(id) {
+  currentChatId = id;
+  render();
+  closeSidebar();
+}
 
-function renderHistory() {
+/* DELETE CHAT */
 
-  const query = $("search").value.toLowerCase();
-  const box = $("history");
+function deleteChat(id) {
+  const confirmed = confirm("Delete this conversation?");
+  if (!confirmed) return;
 
-  box.innerHTML = "";
+  chats = chats.filter(chat => chat.id !== id);
 
-  const filtered = chats.filter(chat => {
-
-    const title = (chat.title || "").toLowerCase();
-
-    const matchesMessages = chat.messages.some(message =>
-      String(message.content || "").toLowerCase().includes(query)
-    );
-
-    return title.includes(query) || matchesMessages;
-  });
-
-  if (!filtered.length) {
-    box.innerHTML =
-      '<div class="empty">No conversations found</div>';
-    return;
+  if (currentChatId === id) {
+    if (chats.length > 0) {
+      currentChatId = chats[0].id;
+    } else {
+      createChat();
+      return;
+    }
   }
 
-  filtered.forEach(chat => {
-
-    const row = document.createElement("div");
-
-    row.className = "chat-item" +
-      (chat.id === activeId ? " active" : "");
-
-    const title = document.createElement("button");
-
-    title.className = "chat-title";
-    title.textContent = chat.title || "New chat";
-
-    title.onclick = () => {
-
-      activeId = chat.id;
-
-      $("language").value = chat.language || "auto";
-
-      render();
-      closeMenu();
-    };
-
-    const more = document.createElement("button");
-
-    more.className = "icon-btn";
-    more.textContent = "⋯";
-    more.title = "Chat options";
-
-    more.onclick = () => {
-
-      const action = prompt(
-        "Type rename or delete"
-      );
-
-      if (action === "rename") {
-
-        const newName = prompt(
-          "New conversation name",
-          chat.title
-        );
-
-        if (newName && newName.trim()) {
-
-          chat.title = newName.trim().slice(0, 80);
-
-          save();
-          render();
-        }
-      }
-
-      if (action === "delete") {
-
-        if (confirm("Delete this conversation?")) {
-
-          chats = chats.filter(
-            item => item.id !== chat.id
-          );
-
-          if (activeId === chat.id) {
-            activeId = chats[0]?.id || null;
-          }
-
-          save();
-          render();
-        }
-      }
-    };
-
-    row.append(title, more);
-    box.append(row);
-  });
+  saveChats();
+  render();
 }
 
+/* RENAME CHAT */
+
+function renameChat(id) {
+  const chat = chats.find(item => item.id === id);
+  if (!chat) return;
+
+  const newTitle = prompt("Enter conversation name:", chat.title);
+
+  if (newTitle && newTitle.trim()) {
+    chat.title = newTitle.trim();
+    saveChats();
+    render();
+  }
+}
+
+/* SIDEBAR */
+
+function openSidebar() {
+  sidebar.classList.add("open");
+
+  if (window.innerWidth < 800) {
+    overlay.classList.add("show");
+  }
+}
+
+function closeSidebar() {
+  sidebar.classList.remove("open");
+  overlay.classList.remove("show");
+}
+
+document.getElementById("menuBtn").addEventListener(
+  "click", openSidebar
+);
+
+overlay.addEventListener("click", closeSidebar);
+
+document.getElementById("newChatBtn").addEventListener(
+  "click", createChat
+);
+
+/* SEARCH */
+
+searchInput.addEventListener("input", renderHistory);
+
+/* DISPLAY HISTORY */
+
+function renderHistory() {
+  const query = searchInput.value.toLowerCase().trim();
+
+  historyList.innerHTML = "";
+
+  chats.forEach(chat => {
+    const searchableText =
+      chat.title + " " +
+      chat.messages.map(m => m.content).join(" ");
+
+    if (!searchableText.toLowerCase().includes(query)) {
+      return;
+    }
+
+    const item = document.createElement("div");
+    item.className =
+      "chat-item" + (chat.id === currentChatId ? " active" : "");
+
+    const title = document.createElement("div");
+    title.className = "chat-title";
+    title.textContent = chat.title;
+    title.addEventListener("click", () => switchChat(chat.id));
+
+    const actions = document.createElement("div");
+    actions.className = "chat-actions";
+
+    const rename = document.createElement("button");
+    rename.textContent = "✎";
+    rename.title = "Rename";
+    rename.addEventListener("click", () => renameChat(chat.id));
+
+    const remove = document.createElement("button");
+    remove.textContent = "×";
+    remove.title = "Delete";
+    remove.addEventListener("click", () => deleteChat(chat.id));
+
+    actions.append(rename, remove);
+    item.append(title, actions);
+    historyList.appendChild(item);
+  });
+}
 
 /* DISPLAY MESSAGES */
 
-function addMessageNode(message, index) {
-
-  const row = document.createElement("div");
-
-  row.className =
-    "msg " + (message.role === "user" ? "user" : "ai");
-
-  const avatar = document.createElement("div");
-
-  avatar.className = "avatar";
-  avatar.textContent =
-    message.role === "user" ? "You" : "S";
-
-  const wrap = document.createElement("div");
-
-  wrap.style.minWidth = "0";
-
-  const bubble = document.createElement("div");
-
-  bubble.className = "bubble";
-  bubble.textContent = message.content;
-
-  wrap.append(bubble);
-
-  if (message.role === "assistant") {
-
-    const tools = document.createElement("div");
-
-    tools.className = "msg-tools";
-
-    const copy = document.createElement("button");
-
-    copy.textContent = "Copy";
-
-    copy.onclick = async () => {
-
-      try {
-        await navigator.clipboard.writeText(message.content);
-        copy.textContent = "Copied";
-      } catch {
-        copy.textContent = "Copy unavailable";
-      }
-    };
-
-    tools.append(copy);
-
-    const chat = activeChat();
-
-    if (
-      chat &&
-      index === chat.messages.length - 1 &&
-      chat.messages.length >= 2 &&
-      chat.messages[chat.messages.length - 2].role === "user"
-    ) {
-
-      const again = document.createElement("button");
-
-      again.textContent = "Regenerate";
-
-      again.onclick = () => {
-
-        const lastUser =
-          chat.messages[chat.messages.length - 2].content;
-
-        chat.messages.pop();
-
-        save();
-        render();
-
-        sendMessage(lastUser, true);
-      };
-
-      tools.append(again);
-    }
-
-    wrap.append(tools);
-  }
-
-  row.append(avatar, wrap);
-
-  $("messages").append(row);
-}
-
-
-/* RENDER CHAT */
-
 function render() {
+  const chat = currentChat();
+  if (!chat) return;
 
-  renderHistory();
+  messages.innerHTML = "";
 
-  const chat = activeChat();
-
-  $("messages").innerHTML = "";
-
-  $("topTitle").textContent =
-    chat?.title || "New chat";
-
-  if (!chat || !chat.messages.length) {
-
+  if (chat.messages.length === 0) {
     const welcome = document.createElement("div");
-
     welcome.className = "welcome";
 
-    welcome.innerHTML =
-      '<h1 style="color:#fff">What can I help with?</h1>' +
-      '<p>Ask Sylvie anything. You can chat in English, Hindi, or Odia.</p>';
+    const logo = document.createElement("img");
+    logo.src = "./icon-192.png";
+    logo.alt = "Sylvie AI";
+    logo.onerror = () => logo.style.display = "none";
 
-    $("messages").append(welcome);
+    const heading = document.createElement("h1");
+    heading.textContent = "What can I help with?";
+
+    const paragraph = document.createElement("p");
+    paragraph.textContent =
+      "Ask Sylvie anything. You can chat in English, Hindi, or Odia.";
+
+    welcome.append(logo, heading, paragraph);
+    messages.appendChild(welcome);
 
   } else {
-
     chat.messages.forEach((message, index) => {
-      addMessageNode(message, index);
+      addMessageElement(message, index);
     });
   }
 
-  $("chatArea").scrollTop =
-    $("chatArea").scrollHeight;
+  renderHistory();
+  scrollToBottom();
 }
 
+/* CREATE MESSAGE ELEMENT */
+
+function addMessageElement(message, index) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "message " + message.role;
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = message.content;
+
+  wrapper.appendChild(bubble);
+
+  if (message.role === "assistant") {
+    const tools = document.createElement("div");
+    tools.className = "message-tools";
+
+    const copy = document.createElement("button");
+    copy.textContent = "Copy";
+    copy.addEventListener("click", () => {
+      copyText(message.content);
+    });
+
+    tools.appendChild(copy);
+
+    const chat = currentChat();
+
+    if (index === chat.messages.length - 1) {
+      const regenerate = document.createElement("button");
+      regenerate.textContent = "Regenerate";
+      regenerate.addEventListener("click", regenerateReply);
+      tools.appendChild(regenerate);
+    }
+
+    wrapper.appendChild(tools);
+  }
+
+  messages.appendChild(wrapper);
+}
+
+/* COPY */
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Copied!");
+  } catch (error) {
+    const temp = document.createElement("textarea");
+    temp.value = text;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    temp.remove();
+    alert("Copied!");
+  }
+}
 
 /* LANGUAGE */
 
 function languageInstruction() {
+  const language = languageSelect.value;
 
-  const value = $("language").value;
-
-  if (value === "hi") {
-    return "Respond in Hindi.";
+  if (language === "auto") {
+    return "Reply in the same language as the user's latest message.";
   }
 
-  if (value === "or") {
-    return "ଓଡ଼ିଆରେ ଉତ୍ତର ଦିଅ।";
+  if (language === "Hindi") {
+    return "Please reply in Hindi.";
   }
 
-  if (value === "en") {
-    return "Respond in English.";
+  if (language === "Odia") {
+    return "Please reply in Odia.";
   }
 
-  return "Respond in the same language as the user's latest message.";
+  return "Please reply in English.";
 }
 
+/* ADD MESSAGE */
 
-/* SEND MESSAGE TO CLOUDFLARE */
+function addMessage(role, content) {
+  const chat = currentChat();
+  if (!chat) return;
 
-async function sendMessage(text, regenerate = false) {
-
-  if (busy) return;
-
-  if (!activeChat()) {
-    makeChat();
-  }
-
-  const chat = activeChat();
-
-  if (!regenerate) {
-
-    chat.messages.push({
-      role: "user",
-      content: text
-    });
-
-    if (chat.title === "New chat") {
-
-      chat.title =
-        text.slice(0, 42) +
-        (text.length > 42 ? "…" : "");
-    }
-  }
+  chat.messages.push({
+    role,
+    content
+  });
 
   chat.updated = Date.now();
 
-  save();
+  if (chat.messages.length === 1 && role === "user") {
+    chat.title = content.slice(0, 35);
+    if (content.length > 35) chat.title += "...";
+  }
+
+  saveChats();
+}
+
+/* SCROLL */
+
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    chatArea.scrollTop = chatArea.scrollHeight;
+  });
+}
+
+/* SEND MESSAGE */
+
+async function sendMessage(existingText = null, isRegenerate = false) {
+  if (isSending) return;
+
+  const text = (existingText ?? messageInput.value).trim();
+
+  if (!text) return;
+
+  const chat = currentChat();
+  if (!chat) return;
+
+  if (!isRegenerate) {
+    addMessage("user", text);
+    messageInput.value = "";
+    messageInput.style.height = "auto";
+  }
+
+  isSending = true;
+  sendBtn.disabled = true;
+
   render();
 
-  busy = true;
+  const typing = document.createElement("div");
+  typing.className = "typing";
+  typing.textContent = "Sylvie is thinking...";
+  messages.appendChild(typing);
 
-  $("send").disabled = true;
-
-  const pending = document.createElement("div");
-
-  pending.className = "msg ai";
-
-  const avatar = document.createElement("div");
-
-  avatar.className = "avatar";
-  avatar.textContent = "S";
-
-  const bubble = document.createElement("div");
-
-  bubble.className = "bubble";
-  bubble.textContent = "Sylvie is thinking...";
-
-  pending.append(avatar, bubble);
-
-  $("messages").append(pending);
-
-  $("chatArea").scrollTop =
-    $("chatArea").scrollHeight;
+  scrollToBottom();
 
   try {
+    const latestChat = currentChat();
 
-    const history = chat.messages
+    const history = latestChat.messages
       .slice(0, -1)
       .slice(-12)
-      .map(message => ({
-        role:
-          message.role === "assistant"
-            ? "assistant"
-            : "user",
-        content: message.content
+      .map(item => ({
+        role: item.role,
+        content: item.content
       }));
 
-    const latest =
-      chat.messages[chat.messages.length - 1]?.content || text;
-
     const response = await fetch(API, {
-
       method: "POST",
-
       headers: {
         "Content-Type": "application/json"
       },
-
       body: JSON.stringify({
-
-        message:
-          latest + "\n\n" + languageInstruction(),
-
+        message: text + "\n\n" + languageInstruction(),
         history: history
-
       })
-
     });
 
     if (!response.ok) {
@@ -853,142 +896,91 @@ async function sendMessage(text, regenerate = false) {
     const data = await response.json();
 
     if (!data.reply) {
-      throw new Error(data.error || "No reply received");
+      throw new Error("The server returned no reply.");
     }
 
-    chat.messages.push({
-      role: "assistant",
-      content: data.reply
-    });
-
-    chat.updated = Date.now();
-
-    save();
-
-    pending.remove();
-
-    render();
+    addMessage("assistant", data.reply);
 
   } catch (error) {
+    console.error("Sylvie error:", error);
 
-    console.error("Sylvie AI error:", error);
-
-    bubble.textContent =
-      "I couldn't connect just now. Please try again. Error: " +
-      error.message;
+    addMessage(
+      "assistant",
+      "Sorry, I couldn't connect to Sylvie's AI server. Please check your internet connection and try again.\n\nError: " +
+      error.message
+    );
 
   } finally {
-
-    busy = false;
-
-    $("send").disabled = false;
-
-    $("message").focus();
+    isSending = false;
+    sendBtn.disabled = false;
+    render();
   }
 }
 
+/* REGENERATE */
 
-/* FORM SUBMISSION */
+function regenerateReply() {
+  const chat = currentChat();
+  if (!chat || isSending) return;
 
-$("form").addEventListener("submit", event => {
+  const lastAssistant = chat.messages[chat.messages.length - 1];
 
-  event.preventDefault();
-
-  const value = $("message").value.trim();
-
-  if (!value || busy) return;
-
-  $("message").value = "";
-
-  $("message").style.height = "auto";
-
-  sendMessage(value);
-});
-
-
-/* TEXTAREA AUTO HEIGHT */
-
-$("message").addEventListener("input", event => {
-
-  event.target.style.height = "auto";
-
-  event.target.style.height =
-    Math.min(event.target.scrollHeight, 150) + "px";
-});
-
-
-/* ENTER TO SEND, SHIFT+ENTER FOR NEW LINE */
-
-$("message").addEventListener("keydown", event => {
-
-  if (event.key === "Enter" && !event.shiftKey) {
-
-    event.preventDefault();
-
-    $("form").requestSubmit();
+  if (!lastAssistant || lastAssistant.role !== "assistant") {
+    return;
   }
-});
 
+  chat.messages.pop();
 
-/* BUTTON EVENTS */
+  const lastUser = [...chat.messages]
+    .reverse()
+    .find(item => item.role === "user");
 
-$("newChat").addEventListener("click", makeChat);
-
-$("menuBtn").addEventListener("click", openMenu);
-
-$("closeSidebar").addEventListener("click", closeMenu);
-
-$("overlay").addEventListener("click", closeMenu);
-
-$("search").addEventListener("input", renderHistory);
-
-
-/* LANGUAGE CHANGE */
-
-$("language").addEventListener("change", () => {
-
-  const chat = activeChat();
-
-  if (chat) {
-
-    chat.language = $("language").value;
-
-    save();
-  }
-});
-
-
-/* START APPLICATION */
-
-if (!activeId) {
-
-  makeChat();
-
-} else {
-
-  $("language").value =
-    activeChat()?.language || "auto";
-
+  saveChats();
   render();
+
+  if (lastUser) {
+    sendMessage(lastUser.content, true);
+  }
 }
 
+/* SEND BUTTON */
+
+sendBtn.addEventListener("click", () => {
+  sendMessage();
+});
+
+/* ENTER TO SEND */
+
+messageInput.addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+/* AUTO-RESIZE INPUT */
+
+messageInput.addEventListener("input", () => {
+  messageInput.style.height = "auto";
+  messageInput.style.height =
+    Math.min(messageInput.scrollHeight, 140) + "px";
+});
 
 /* SERVICE WORKER */
 
 if ("serviceWorker" in navigator) {
-
   window.addEventListener("load", () => {
-
-    navigator.serviceWorker
-      .register("./sw.js")
-      .catch(error => {
-        console.error("Service worker error:", error);
-      });
-
+    navigator.serviceWorker.register("./sw.js")
+      .catch(error => console.log("Service worker:", error));
   });
 }
+
+/* START APP */
+
+loadChats();
 
 </script>
 
 </body>
   </html>
+  
